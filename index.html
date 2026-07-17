@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Sorting Dashboard</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body class="light-mode">
+  <div class="d-flex" id="app-root">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white border-end">
+      <div class="p-3">
+        <h4 class="mb-3"><i class="fa-solid fa-sort"></i> Smart Sorting</h4>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Input Data</label>
+          <textarea id="data-input" class="form-control" rows="6" placeholder="Paste numbers or names, one per line"></textarea>
+          <div class="form-text">Accepts numbers, names, matric numbers, student IDs.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Upload File</label>
+          <input id="file-input" type="file" accept=".txt,.csv" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Sort Mode</label>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="mode-toggle">
+            <label class="form-check-label" for="mode-toggle" id="mode-label">Alphabetical</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Algorithms</label>
+          <div id="algos" class="d-grid gap-1">
+            <div><input type="checkbox" class="algo-checkbox" id="algo-bubble" checked> <label for="algo-bubble">Bubble Sort</label></div>
+            <div><input type="checkbox" class="algo-checkbox" id="algo-insertion" checked> <label for="algo-insertion">Insertion Sort</label></div>
+            <div><input type="checkbox" class="algo-checkbox" id="algo-merge" checked> <label for="algo-merge">Merge Sort</label></div>
+            <div><input type="checkbox" class="algo-checkbox" id="algo-quick" checked> <label for="algo-quick">Quick Sort</label></div>
+            <div><input type="checkbox" class="algo-checkbox" id="algo-hybrid" checked> <label for="algo-hybrid">Hybrid Improved Model</label></div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Data Size Hint</label>
+          <select id="size-hint" class="form-select">
+            <option value="small">Small (≤ 50)</option>
+            <option value="medium">Medium (51–500)</option>
+            <option value="large">Large (501+)</option>
+          </select>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button id="sort-btn" class="btn btn-primary btn-lg"><i class="fa-solid fa-play"></i> Sort & Compare</button>
+          <button id="clear-btn" class="btn btn-outline-secondary"><i class="fa-solid fa-eraser"></i> Clear</button>
+        </div>
+
+        <hr>
+
+        <div class="mb-2">
+          <label class="form-label">Sample Datasets</label>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-info sample-btn" data-type="numbers" data-size="small">Numbers Small</button>
+            <button class="btn btn-sm btn-outline-info sample-btn" data-type="numbers" data-size="medium">Numbers Medium</button>
+            <button class="btn btn-sm btn-outline-info sample-btn" data-type="numbers" data-size="large">Numbers Large</button>
+            <button class="btn btn-sm btn-outline-warning sample-btn" data-type="names" data-size="small">Names Small</button>
+            <button class="btn btn-sm btn-outline-warning sample-btn" data-type="names" data-size="medium">Names Medium</button>
+            <button class="btn btn-sm btn-outline-warning sample-btn" data-type="names" data-size="large">Names Large</button>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <button id="export-csv" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+            <button id="export-pdf" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="theme-toggle">
+            <label class="form-check-label" for="theme-toggle">Dark</label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-grow-1 p-4">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="mb-0">Improved Hybrid Sorting Model — Dashboard</h3>
+          <div id="status-area" class="text-muted small">Ready</div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="d-none mb-3">
+          <div class="spinner-border text-primary" role="status"></div>
+          <span class="ms-2">Sorting in progress...</span>
+        </div>
+
+        <!-- Results table -->
+        <section class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Sorted Results</h5>
+            <div class="table-responsive">
+              <table id="results-table" class="table table-striped table-hover">
+                <thead>
+                  <tr><th>Algorithm</th><th>Sorted Sample (first 20)</th><th>Execution Time (ms)</th><th>Comparisons</th><th>Memory (sim)</th></tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Performance cards -->
+        <section class="row g-3 mb-3" id="perf-cards">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title">Execution Time</h6>
+                <div id="best-time" class="display-6 fw-bold">—</div>
+                <div class="text-muted small"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title">Memory Usage (simulated)</h6>
+                <div id="best-memory" class="display-6 fw-bold">—</div>
+                <div class="text-muted small"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title">Number of Comparisons</h6>
+                <div id="best-comparisons" class="display-6 fw-bold">—</div>
+                <div class="text-muted small"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Algorithm Comparison</h5>
+            <canvas id="barChart" height="120"></canvas>
+            <hr>
+            <canvas id="lineChart" height="80"></canvas>
+          </div>
+        </section>
+
+        <footer class="text-muted small mt-4">
+          <div>Delta State Polytechnic Ogwashi-Uku Project Defense. </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Sorting logic -->
+  <script src="assets/js/sorting.js"></script>
+  <!-- App logic -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

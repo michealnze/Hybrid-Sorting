@@ -1,0 +1,36 @@
+:root{
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #212529;
+  --muted: #6c757d;
+  --accent: #0d6efd;
+}
+body.light-mode{
+  background: var(--bg);
+  color: var(--text);
+}
+body.dark-mode{
+  --bg: #0b1220;
+  --card: #0f1724;
+  --text: #e6eef8;
+  --muted: #9aa7b8;
+  --accent: #66b2ff;
+  background: var(--bg);
+  color: var(--text);
+}
+#sidebar{
+  width: 320px;
+  min-height: 100vh;
+}
+#sidebar .btn { white-space: nowrap; }
+#results-table td, #results-table th { vertical-align: middle; }
+.highlight-best {
+  border-left: 4px solid #198754 !important;
+  background: rgba(25,135,84,0.04);
+}
+.sample-btn { font-size: .8rem; }
+#loading { align-items: center; display: flex; gap: .5rem; }
+@media (max-width: 900px){
+  #sidebar{ width: 100%; position: relative; }
+  #app-root{ flex-direction: column; }
+}
